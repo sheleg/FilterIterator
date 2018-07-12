@@ -18,13 +18,14 @@ int main()
 	vec.push_back(4);
 
 	iterator_with_filter<decltype(vec.begin()), bool(*)(int)> iter1(vec.begin(), vec.end(), isEvenCheck);
-	iterator_with_filter<decltype(vec.begin()), bool(*)(int)> iter2(vec.begin(), vec.end(), isEvenCheck);
-	std::cout << *(++iter1);
-	std::cout << *iter2;
-	//std::cout << (iter1 != iter2);
-	swap(iter1, iter2);
-	std::cout << *iter1++;
-	std::cout << *iter2;
-	//std::min_element(iter, iter);
+	iterator_with_filter<decltype(vec.begin()), bool(*)(int)> iter2(vec.end(), vec.end(), isEvenCheck);
+	//std::cout << *iter1++;
+	//std::cout << *iter2;
+	////std::cout << (iter1 != iter2);
+	//swap(iter1, iter2);
+	//std::cout << *iter1;
+	//std::cout << *iter2;
+
+	std::cout << *std::min_element(iter1, iter2);
 	return 0;
 }

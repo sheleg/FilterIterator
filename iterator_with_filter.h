@@ -3,7 +3,7 @@
 #include <iterator>
 
 template<typename InputIterator, typename Filter>
-class iterator_with_filter
+class iterator_with_filter : public InputIterator
 {
 	using Data = decltype(*(std::declval<InputIterator>()));
 	using SmartIterator = iterator_with_filter<InputIterator, Filter>;
@@ -26,7 +26,7 @@ public:
 		, end_iterator_(container_end)
 		, filter_(filter) 
 	{
-		if (!filter_(*current_iterator_))
+		if (current_iterator_ != end_iterator_ && !filter_(*current_iterator_))
 			get_next_filtered();
 	}
 
@@ -34,11 +34,6 @@ public:
 		: current_iterator_(iterator.current_iterator_)
 		, end_iterator_(iterator.end_iterator_)
 		, filter_(iterator.filter_) {}
-
-	//InputIterator operator * ()
-	//{
-	//	return iterator_;
-	//}
 
 	Data operator * ()
 	{
@@ -50,7 +45,7 @@ public:
 		return current_iterator_;
 	}
 
-	SmartIterator operator ++ ()
+	SmartIterator& operator ++ ()
 	{
 		get_next_filtered();
 		return *this;
@@ -80,8 +75,4 @@ public:
 	{
 		return current_iterator_ != sm_iterator.current_iterator_;
 	}
-
-	//friend void swap(const SmartIterator& sm_iterator1, const SmartIterator& sm_iterator2) {
-	//	std::swap(sm_iterator1.current_iterator_, sm_iterator2.current_iterator_);
-	//}
 };
