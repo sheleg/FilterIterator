@@ -2,77 +2,82 @@
 #include <iostream>
 #include <iterator>
 
-template<typename InputIterator, typename Filter>
-class iterator_with_filter : public InputIterator
+template<typename BaseIterator, typename Filter>
+class iterator_with_filter : public BaseIterator
 {
-	using Data = decltype(*(std::declval<InputIterator>()));
-	using SmartIterator = iterator_with_filter<InputIterator, Filter>;
+	using ItemT = decltype(*(std::declval<BaseIterator>()));
+	using IteratorT = iterator_with_filter<BaseIterator, Filter>;
 
-	InputIterator current_iterator_;
-	InputIterator end_iterator_;
+	BaseIterator current_;
+	BaseIterator end_;
 	Filter filter_;
 
-	void get_next_filtered()
+	void forward()
 	{
 		do
 		{
-			++current_iterator_;
-		} while (current_iterator_ != end_iterator_ && !filter_(*(current_iterator_)));
+			++current_;
+		} while (current_ != end_ && !filter_(*(current_)));
 	}
 
 public:
-	iterator_with_filter(InputIterator iterator, InputIterator container_end, Filter filter)
-		: current_iterator_(iterator)
-		, end_iterator_(container_end)
+	iterator_with_filter()
+		: current_(nullptr)
+		, end_(nullptr)
+		, filter_([]() { return nullptr; }) {}
+
+	iterator_with_filter(BaseIterator iterator, BaseIterator container_end, Filter filter)
+		: current_(iterator)
+		, end_(container_end)
 		, filter_(filter) 
 	{
-		if (current_iterator_ != end_iterator_ && !filter_(*current_iterator_))
-			get_next_filtered();
+		if (current_ != end_ && !filter_(*current_))
+			forward();
 	}
 
-	iterator_with_filter(const SmartIterator& iterator)
-		: current_iterator_(iterator.current_iterator_)
-		, end_iterator_(iterator.end_iterator_)
+	iterator_with_filter(const IteratorT& iterator)
+		: current_(iterator.current_)
+		, end_(iterator.end_)
 		, filter_(iterator.filter_) {}
 
-	Data operator * ()
+	ItemT operator * ()
 	{
-		return *current_iterator_;
+		return *current_;
 	}
 
-	InputIterator operator -> ()
+	BaseIterator operator -> ()
 	{
-		return current_iterator_;
+		return current_;
 	}
 
-	SmartIterator& operator ++ ()
+	IteratorT& operator ++ ()
 	{
-		get_next_filtered();
+		forward();
 		return *this;
 	}
 
-	SmartIterator operator ++ (int)
+	IteratorT operator ++ (int)
 	{
-		SmartIterator temp_iterator(*this);
-		get_next_filtered();
+		IteratorT temp_iterator(*this);
+		forward();
 		return temp_iterator;
 	}
 
-	SmartIterator& operator = (const SmartIterator& sm_iterator)
+	IteratorT& operator = (const IteratorT& sm_iterator)
 	{
-		current_iterator_ = sm_iterator.current_iterator_;
-		end_iterator_ = sm_iterator.end_iterator_;
+		current_ = sm_iterator.current_;
+		end_ = sm_iterator.end_;
 		filter_ = sm_iterator.filter_;
 		return *this;
 	}
 
-	bool operator == (const SmartIterator& sm_iterator)
+	bool operator == (const IteratorT& sm_iterator)
 	{
-		return current_iterator_ == sm_iterator.current_iterator_;
+		return current_ == sm_iterator.current_;
 	}
 
-	bool operator != (const SmartIterator& sm_iterator)
+	bool operator != (const IteratorT& sm_iterator)
 	{
-		return current_iterator_ != sm_iterator.current_iterator_;
+		return current_ != sm_iterator.current_;
 	}
 };
