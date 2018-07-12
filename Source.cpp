@@ -15,10 +15,10 @@ int main()
 	vec.push_back(1);
 	vec.push_back(2);
 	vec.push_back(3);
-	vec.push_back(4);
+	vec.push_back(5);
 
-	iterator_with_filter<decltype(vec.begin()), bool(*)(int)> iter1(vec.begin(), vec.end(), isEvenCheck);
-	iterator_with_filter<decltype(vec.begin()), bool(*)(int)> iter2(vec.end(), vec.end(), isEvenCheck);
+	iterator_filtering<decltype(vec.begin()), bool(*)(int)> iter1(vec.begin(), vec.end(), isEvenCheck);
+	iterator_filtering<decltype(vec.begin()), bool(*)(int)> iter2(vec.end(), vec.end(), isEvenCheck);
 	//std::cout << *iter1++;
 	//std::cout << *iter2;
 	////std::cout << (iter1 != iter2);

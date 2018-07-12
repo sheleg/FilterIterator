@@ -2,11 +2,14 @@
 #include <iostream>
 #include <iterator>
 
+//https://stackoverflow.com/questions/7758580/writing-your-own-stl-container/7759622#
+//https://stackoverflow.com/questions/8054273/how-to-implement-an-stl-style-iterator-and-avoid-common-pitfalls
+
 template<typename BaseIterator, typename Filter>
-class iterator_with_filter : public BaseIterator
+class iterator_filtering/* : public BaseIterator*/
 {
 	using ItemT = decltype(*(std::declval<BaseIterator>()));
-	using IteratorT = iterator_with_filter<BaseIterator, Filter>;
+	using IteratorT = iterator_filtering<BaseIterator, Filter>;
 
 	BaseIterator current_;
 	BaseIterator end_;
@@ -21,12 +24,12 @@ class iterator_with_filter : public BaseIterator
 	}
 
 public:
-	iterator_with_filter()
+	iterator_filtering()
 		: current_(nullptr)
 		, end_(nullptr)
-		, filter_([]() { return nullptr; }) {}
+		, filter_([]() { return false; }) {}
 
-	iterator_with_filter(BaseIterator iterator, BaseIterator container_end, Filter filter)
+	iterator_filtering(BaseIterator iterator, BaseIterator container_end, Filter filter)
 		: current_(iterator)
 		, end_(container_end)
 		, filter_(filter) 
@@ -35,7 +38,7 @@ public:
 			forward();
 	}
 
-	iterator_with_filter(const IteratorT& iterator)
+	iterator_filtering(const IteratorT& iterator)
 		: current_(iterator.current_)
 		, end_(iterator.end_)
 		, filter_(iterator.filter_) {}
@@ -71,13 +74,18 @@ public:
 		return *this;
 	}
 
-	bool operator == (const IteratorT& sm_iterator)
+	friend bool operator == (const IteratorT& first, const IteratorT& second)
 	{
-		return current_ == sm_iterator.current_;
+		return first.current_ == second.current_;
 	}
 
-	bool operator != (const IteratorT& sm_iterator)
+	friend bool operator != (const IteratorT& first, const IteratorT& second)
 	{
-		return current_ != sm_iterator.current_;
+		return first.current_ == second.current_;
+	}
+
+	friend void swap(IteratorT& first, IteratorT& second)
+	{
+		std::swap(first.current_, second.current_);
 	}
 };
