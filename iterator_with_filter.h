@@ -1,21 +1,26 @@
 #pragma once
 #include <iostream>
 
-template<typename InputIterator, typename Filter, typename LessRelation = std::less<decltype(*(std::declval<InputIterator>()))>>
+template<typename InputIterator, typename Filter>
 class iterator_with_filter
 {
 	using Data = decltype(*(std::declval<InputIterator>()));
-	using SmartIterator = iterator_with_filter<InputIterator, Filter, LessRelation>;
+	using SmartIterator = iterator_with_filter<InputIterator, Filter>;
 
 	InputIterator iterator_;
 	Filter filter_;
-	LessRelation less_;
 
 public:
-	iterator_with_filter();
+	iterator_with_filter(InputIterator iterator, Filter filter)
+		: iterator_(iterator)
+		, filter_(filter) {}
 
-	Data SmartIterator::operator * (const SmartIterator& filtered_iterator); 
-	SmartIterator SmartIterator::operator ++ (int);
-	SmartIterator SmartIterator::operator ++ ();
+	InputIterator SmartIterator::operator * (const SmartIterator& filtered_iterator)
+	{
+		return iterator_;
+	}
+
+	SmartIterator SmartIterator::operator ++ (int) {}
+	SmartIterator SmartIterator::operator ++ () {}
 
 };
