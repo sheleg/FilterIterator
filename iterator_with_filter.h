@@ -2,11 +2,18 @@
 #include <iostream>
 #include <iterator>
 
-//https://stackoverflow.com/questions/7758580/writing-your-own-stl-container/7759622#
-//https://stackoverflow.com/questions/8054273/how-to-implement-an-stl-style-iterator-and-avoid-common-pitfalls
+template <class Category, class T, class Distance = ptrdiff_t,
+	class Pointer = T * , class Reference = T & >
+	struct MyIterator {
+	typedef T         value_type;
+	typedef Distance  difference_type;
+	typedef Pointer   pointer;
+	typedef Reference reference;
+	typedef Category  iterator_category;
+};
 
 template<typename BaseIterator, typename Filter>
-class iterator_filtering/* : public BaseIterator*/
+class iterator_filtering : public MyIterator<std::forward_iterator_tag, BaseIterator>/* : public BaseIterator*/
 {
 	using ItemT = decltype(*(std::declval<BaseIterator>()));
 	using IteratorT = iterator_filtering<BaseIterator, Filter>;
@@ -89,3 +96,5 @@ public:
 		std::swap(first.current_, second.current_);
 	}
 };
+
+
